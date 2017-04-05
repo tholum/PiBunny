@@ -17,5 +17,7 @@ Current Status
 * ATTACKMODE needs to be able to change device mode after initilized
 * need a switch setup
 * need a way to have an "Arming Mode" where I can upload payloads as a flash drive
+* Document
+* Test installing it to make sure all the needed files are where they need to be
 
 
