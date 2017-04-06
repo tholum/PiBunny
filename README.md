@@ -46,13 +46,13 @@ This will not be a full replacement for a bash bunny, the bash bunny has a full 
 Current Status
 [ WORKS ]
 * ATTACKMODE successfully sets devices up
+* QUACK
 * bunny_helpers.sh Gets target_ip and other device info
+* SWITCH BETWEEN arming and switch 1
 
 [ Yet to do ]
-* ATTACKMODE needs to be able to change device mode after initilized
-* need a switch setup
-* need a way to have an "Arming Mode" where I can upload payloads as a flash drive
-* Document
 * Test installing it to make sure all the needed files are where they need to be
+* Add a switch2
+* More docs ( Unlikly to actually happen unless there is interest :) )
 
 
