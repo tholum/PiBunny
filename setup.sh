@@ -1,5 +1,5 @@
 #!/bin/bash
-apt install git vim isc-dhcp-server exfat-fuse exfat-utils npm
+apt install git vim isc-dhcp-server exfat-fuse exfat-utils npm -y
 npm install .
 dd if=/dev/zero of=/scripts/system.img bs=1M count=512
 mkdosfs /scripts/system.img
