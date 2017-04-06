@@ -37,4 +37,15 @@ fs.writeFile( "/tmp/lastled" , "G" , function(){
     updateLed();
 });
 
-exec("/scripts/start.sh" , function(){} );
+var gpio = require("pi-gpio");
+var pin = 11;
+gpio.open(pin, "input", function(err) {         // Open pin 16 for output
+        gpio.read(pin, function(err , val ) {
+		if( val == 1 ){
+			exec("/scripts/armingMode.sh" , function(){} );
+		} else {
+			exec("/scripts/switch1.sh" , function(){} );
+		}
+        });
+});
+

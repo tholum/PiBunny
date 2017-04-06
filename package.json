@@ -17,5 +17,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tholum/PiBunny/issues"
+  },
+  "dependencies": {
+    "pi-gpio": "0.0.8"
   }
 }
