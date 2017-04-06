@@ -18,6 +18,7 @@ make
 sudo make install
 
 rsync -av /scripts/etc/ /etc/
+rsync -av /scripts/boot/ /boot/
 systemctl enable pibunny
 
 
