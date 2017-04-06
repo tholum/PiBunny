@@ -20,7 +20,19 @@ sudo make install
 rsync -av /scripts/etc/ /etc/
 systemctl enable pibunny
 
+
+cd /usr/src
+git clone https://github.com/theresalu/rspiducky.git
+cd rspiducky
+gcc usleep.c -o /home/pi/usleep
+gcc hid-gadget-test.c -o /home/pi/hid-gadget-test
+chmod +x /usr/src/rspiducky/duckpy.sh
+
 #For my led script
 sudo wget -O /usr/local/sbin/neouart https://github.com/bigjosh/NeoUart/releases/download/2/neouart
 chmod +x /usr/local/sbin/neouart
 
+for BINFILE in `ls /scripts/bin/`
+do
+	ln -sf /scripts/bin/$BINFILE /bin
+done

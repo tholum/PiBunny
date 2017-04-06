@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ -a $1 ]
+then
+	/usr/src/rspiducky/duckpi.sh $1
+else
+	echo $@ > /tmp/quacktmp
+	 /usr/src/rspiducky/duckpi.sh /tmp/quacktmp
+fi
