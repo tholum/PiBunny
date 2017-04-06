@@ -1,0 +1,21 @@
+{
+  "name": "pibunny.js",
+  "version": "0.0.0",
+  "description": "Why: 1) I already had a pi zero w, and though It would be interesting 2) Pi zero w has wifi built in which would allow more extensive attack's and logging 3) I like a challenge :) 4) a $10 device is more \"Disposable\" then a $100",
+  "main": "pibunny.js",
+  "bin": {
+    "pibunny.js": "LED_WATCH.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tholum/PiBunny.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tholum/PiBunny/issues"
+  }
+}

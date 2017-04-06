@@ -3,6 +3,7 @@ export AM_SERIAL=no
 export AM_ETHERNET=no
 export AM_STORAGE=no
 export AM_HID=no
+FLASHDRIVE_FILE=/root/flash.bin
 for AM in $@;
 do
 	case $AM in
@@ -21,38 +22,53 @@ do
 		HID*)
 			export AM_HID=yes
 		;;
+		FILE_IMAGE*)
+			FLASHDRIVE_FILE=`echo $AM|sed -e "s/^FILE_IMAGE=//"`
+		;;
 		esac
 	done
-
 #	echo "AM SERIAL $AM_SERIAL"
 #	echo "AM ETHERNET $AM_ETHERNET"
 #	echo "AM STORAGE $AM_STORAGE"
 #	echo "AM HID $AM_HID"
 # this file is from: https://github.com/ckuethe/usbarmory/wiki/USB-Gadgets
 
-FLASHDRIVE_FILE=/root/flash.bin
 ID_VENDOR=0x1d6b
 ID_PRODUCT=0x0104
 BDC_DEVICE=0x0100
+BDC_USB=0x200
 SERIAL_NUMBER="fedcba9876543210"
 MANUFACTURER="TimHolum"
 PRODUCT="Pi Zero Bunny"
 
 
+DEV_DIR=g1
+DEV_INT=1
+while [ -d "/sys/kernel/config/usb_gadget/$DEV_DIR" ]
+do 
+  DEV_INT=$((DEV_INT+1))
+  DEV_DIR=g$DEV_INT
+done
+
+
+for OLDDEV in `ls /sys/kernel/config/usb_gadget/`
+do
+	echo "" > /sys/kernel/config/usb_gadget/$OLDDEV/UDC 2> /dev/null
+done
 
 #Unmount any Existing usb libcompose
 #echo '' > UDC
 cd /sys/kernel/config/usb_gadget/
 
 #Make Our Device Folder
-mkdir -p g1
-cd g1
+mkdir -p $DEV_DIR
+cd $DEV_DIR
 
 #Setup USB Stuff
 echo $ID_VENDOR > idVendor # Linux Foundation
 echo $ID_PRODUCT > idProduct # Multifunction Composite Gadget
 echo $BDC_DEVICE > bcdDevice # v1.0.0
-echo $BDC_DEVICE > bcdUSB # USB2
+echo $BDC_USB > bcdUSB # USB2
 
 mkdir -p strings/0x409
 echo $SERIAL_NUMBER > strings/0x409/serialnumber
@@ -61,10 +77,10 @@ echo $PRODUCT > strings/0x409/product
 
 N="usb0"
 
-
-mkdir -p functions/acm.$N
-mkdir -p functions/hid.$N
-
+if [ "$AM_SERIAL" == "yes" ]
+then
+    mkdir -p functions/acm.$N
+fi
 
 C=1
 mkdir -p configs/c.$C/strings/0x409
@@ -72,13 +88,13 @@ mkdir -p configs/c.$C/strings/0x409
 if [ "$AM_STORAGE" == "yes" ]
 then
 	mkdir -p ${FLASHDRIVE_FILE/img/d}
-	mount -o loop,ro,offset=2048 -t vfat $FLASHDRIVE_FILE ${FLASHDRIVE_FILE/img/d}
+	mount -o loop,ro -t vfat $FLASHDRIVE_FILE ${FLASHDRIVE_FILE/img/d}
 	mkdir -p functions/mass_storage.$N
 	echo 1 > functions/mass_storage.$N/stall
 	echo 0 > functions/mass_storage.$N/lun.0/cdrom
 	echo 0 > functions/mass_storage.$N/lun.0/ro
 	echo 0 > functions/mass_storage.$N/lun.0/nofua
-	echo $FILE > functions/mass_storage.$N/lun.0/file
+	echo $FLASHDRIVE_FILE > functions/mass_storage.$N/lun.0/file
 	ln -s functions/mass_storage.$N configs/c.$C/
 fi
 #ETHERNET
@@ -95,17 +111,20 @@ fi
 
 if [ "$AM_HID" == "yes" ]
 then
-
+    mkdir -p functions/hid.$N
     echo 1 > functions/hid.usb0/protocol
     echo 1 > functions/hid.usb0/subclass
     echo 8 > functions/hid.usb0/report_length
     echo -ne \\x05\\x01\\x09\\x06\\xa1\\x01\\x05\\x07\\x19\\xe0\\x29\\xe7\\x15\\x00\\x25\\x01\\x75\\x01\\x95\\x08\\x81\\x02\\x95\\x01\\x75\\x08\\x81\\x03\\x95\\x05\\x75\\x01\\x05\\x08\\x19\\x01\\x29\\x05\\x91\\x02\\x95\\x01\\x75\\x03\\x91\\x03\\x95\\x06\\x75\\x08\\x15\\x00\\x25\\x65\\x05\\x07\\x19\\x00\\x29\\x65\\x81\\x00\\xc0 > functions/hid.usb0/report_desc
+    ln -s functions/hid.$N configs/c.$C/
 fi
 
 
 echo 250 > configs/c.$C/MaxPower 
-ln -s functions/acm.$N configs/c.$C/
-ln -s functions/hid.$N configs/c.$C/
+if [ "$AM_SERIAL" == "yes" ]
+then
+	ln -s functions/acm.$N configs/c.$C/
+fi
 
 # this lists available UDC drivers
 ls /sys/class/udc > UDC
@@ -113,16 +132,8 @@ ls /sys/class/udc > UDC
 if [ "$AM_ETHERNET" == "yes" ]
 then
     ifconfig $N 172.16.64.1 netmask 255.255.255.0 up
-    /etc/init.d/dhcpcd restart
+    systemctl restart isc-dhcp-server.service
 fi
 
 
 
-#route add -net default gw 10.0.0.2
-echo "done. "
-#echo "initializing demo menu..."
-#while 1; do
-#	/home/pi/hardpass/oled/run.sh
-#done &
-echo "starting shutdown 'daemon'"
-#/home/pi/hardpass/shutdown/shutdown-button.sh &

@@ -1,0 +1,13 @@
+[Service]
+ExecStart=/usr/bin/nodejs /scripts/pibunny.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=node-pibunny
+User=root
+Group=root
+Environment=NODE_ENV=production
+WorkingDirectory=/scripts/
+
+[Install]
+WantedBy=multi-user.target
