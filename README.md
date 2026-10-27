@@ -1,3 +1,11 @@
+## Project status
+
+PiBunny is a historical Raspberry Pi experiment from 2017. The original setup instructions below target Raspbian 2017-03-02; compatibility with current Raspberry Pi OS releases has not been validated as part of this documentation update.
+
+Use only on hardware you own or have explicit permission to test. The original implementation notes and limitations are preserved below.
+
+---
+
 Special Thanks to the following projects that made this possible ( I am not affiliated with any of them though )
 * Hak5: For the idea https://hakshop.com/products/bash-bunny 
 * http://isticktoit.net/?p=1383 For an example on getting usb gadgets working
